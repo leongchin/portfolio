@@ -104,6 +104,49 @@ body{background:var(--bg);color:var(--txt);font-family:'DM Mono',monospace;paddi
 .obs-body strong{color:var(--txt);}
 /* Map tooltip */
 .sg-tip{position:fixed;background:#0e1018;border:1px solid #1e2230;padding:7px 11px;border-radius:5px;font-family:'DM Mono',monospace;font-size:10px;color:#e8eaf2;pointer-events:none;display:none;z-index:200;white-space:nowrap;}
+
+/* ===== Responsive (tablet + mobile) ===== */
+.kpis>*,.r2>*,.r2b>*,.r2c>*{min-width:0;}
+.sc{overflow-x:auto;}
+.spu-panel{overflow-x:auto;}
+.hm-hint{display:none;font-size:9px;color:var(--mu);margin:-4px 0 8px;}
+@media(max-width:1100px){
+  .kpis{grid-template-columns:repeat(3,1fr);}
+  .bg{grid-template-columns:repeat(2,1fr);}
+  .obs-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:760px){
+  body{padding:14px;}
+  .hdr{flex-direction:column;gap:12px;}
+  .hdr>div:last-child{text-align:left!important;}
+  .hdr h1{font-size:19px;line-height:1.2;}
+  .hdr p{font-size:9px;letter-spacing:1px;}
+  .kpis{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .kpi{padding:12px;}
+  .kv{font-size:17px;}
+  .kl{font-size:8.5px;letter-spacing:1.4px;}
+  .ks{font-size:9.5px;}
+  .r2,.r2b,.r2c{grid-template-columns:1fr;}
+  .card{padding:14px;}
+  .ct{font-size:9.5px;letter-spacing:1.4px;flex-wrap:wrap;}
+  .cw{height:200px;}
+  .cr-l{width:92px;font-size:9.5px;}
+  .cr-vs{width:88px;}
+  .hm-hint{display:block;}
+  .obs-grid{grid-template-columns:1fr;}
+  .obs-title{font-size:12px;}
+  .obs-body{font-size:11px;}
+  .bi{font-size:10px;}
+  .spu-panel .t th:nth-child(3),.spu-panel .t td:nth-child(3){display:none;}
+  .t tbody td{padding-right:4px;}
+  .barl{max-width:36px;}
+  .bg{grid-template-columns:1fr 1fr;gap:8px;}
+  .bc{padding:10px;flex-direction:column;gap:6px;}
+  .spu-tab{padding:6px 10px;}
+  .spu-meta{gap:8px;}
+  .spu-k{flex:1 1 40%;}
+  body>div:first-child{font-size:11px!important;}
+}
 </style>
 </head>
 <body><div style="background:#c8a84b;color:#06070d;font:600 12px/1.4 system-ui,sans-serif;text-align:center;padding:7px 12px">Sample data · Brand, products, staff and figures are anonymised to demonstrate the AI reporting workflow · <a href="../index.html#ai" style="color:inherit;text-decoration:underline">Back to portfolio</a></div>
@@ -169,6 +212,7 @@ body{background:var(--bg);color:var(--txt);font-family:'DM Mono',monospace;paddi
 <!-- Heatmap -->
 <div class="full card">
   <div class="ct"><span class="dot" style="background:var(--teal)"></span>Hourly Purchase Timing — GMV (SGD) &nbsp;<span style="font-size:8px;color:var(--mu);letter-spacing:0;text-transform:none;font-family:'DM Mono'">[SG local time · booth ~12:00–21:00]</span></div>
+  <div class="hm-hint">Swipe sideways to see all hours →</div>
   <div class="hm-sc"><div class="hm" id="heatmap"></div></div>
   <div class="hm-leg"><span>Low</span><div class="hm-bar"></div><span>High</span><span style="margin-left:12px;color:var(--di)">Top = GMV · Bottom = order count</span></div>
 </div>
