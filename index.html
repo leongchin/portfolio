@@ -250,6 +250,32 @@
     .award{flex-direction:column;text-align:center}
     .hero{padding:40px 0 30px}
   }
+
+  /* ===== AI Systems ===== */
+  .ai-sec{border-top:1px solid var(--border);scroll-margin-top:66px}
+  .ai-flow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 26px;font-size:.85rem;color:var(--muted)}
+  .ai-flow span.step{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:6px 14px;color:var(--text);font-weight:500}
+  .ai-flow span.arrow{color:var(--accent);font-weight:700}
+  .ai-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .ai-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+    display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .2s,border-color .2s}
+  .ai-card:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .ai-card .thumb{height:190px;display:block}
+  .ai-card .thumb img{object-position:top left}
+  .ai-card:hover .thumb img{transform:scale(1.04)}
+  .ai-card .card-body{overflow:visible}
+  .ai-card .card-body{flex:1}
+  .ai-card .result{margin-top:auto}
+  .ai-card .card-body p{margin-bottom:18px}
+  .ai-actions{display:flex;gap:10px;margin-top:16px}
+  .ai-actions .btn{padding:10px 16px;font-size:.85rem;border-radius:10px}
+  .ai-note{margin-top:22px;font-size:.8rem;color:var(--muted);text-align:center}
+  .ai-teaser{display:inline-flex;align-items:center;gap:8px;margin-top:30px;padding:8px 16px;border-radius:999px;
+    border:1px solid var(--border);background:var(--accent-soft);color:var(--accent-strong);font-size:.88rem;font-weight:600;transition:border-color .2s,transform .15s}
+  .ai-teaser:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .ai-teaser b{background:var(--accent);color:#fff;border-radius:999px;padding:2px 8px;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase}
+  @media(max-width:900px){.ai-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:620px){.ai-grid{grid-template-columns:1fr}.ai-flow{font-size:.8rem}}
 </style>
 </head>
 <body>
@@ -261,6 +287,7 @@
       <nav class="nav-links">
         <a href="#about">About</a>
         <a href="#work">Work</a>
+        <a href="#ai">AI Systems</a>
         <a href="#value">Why me</a>
         <a href="#voices">Testimonials</a>
         <a href="#faq">FAQ</a>
@@ -289,6 +316,8 @@
         <div class="stat"><div class="num">264%</div><div class="lbl">Increased .com revenue to S$200k in 5 months</div></div>
         <div class="stat"><div class="num">S$300K</div><div class="lbl">Exceeded retail store launch target by 20%</div></div>
       </div>
+      <a href="#ai" class="ai-teaser"><b>New</b> AI marketing systems I've built →</a>
+    
     </div>
   </section>
 
@@ -511,6 +540,55 @@
   </section>
 
   <!-- ===== What value can I bring ===== -->
+    <!-- ===== AI Systems ===== -->
+  <section class="ai-sec" id="ai">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">AI Systems</p>
+        <h2>Marketing reporting, automated with AI</h2>
+        <p class="lead">AI agents I've built that turn raw marketing data into decisions: the reporting and analysis a marketing team runs every week, produced automatically.</p>
+      </div>
+      <div class="ai-flow">
+        <span class="step">Raw export (Excel / CSV)</span><span class="arrow">→</span>
+        <span class="step">AI agent (Claude)</span><span class="arrow">→</span>
+        <span class="step">Executive dashboard + recommendations</span>
+      </div>
+      <div class="ai-grid">
+        <article class="ai-card">
+          <a class="thumb" href="ai/event-dashboard.html" target="_blank" rel="noopener"><img src="ai/img/event-dashboard.jpg" alt="Event performance dashboard preview" loading="lazy"></a>
+          <div class="card-body">
+            <span class="tag">Retail events · Exec reporting</span>
+            <h3>Event sell-out dashboard</h3>
+            <p>Turns a raw roadshow order export into a next-morning executive dashboard: daily GMV trend, hourly heatmap, product and category mix, payment methods, staff ranking and delivery regions, with written insights.</p>
+            <div class="result"><div class="r"><div class="rn">1,200+</div><div class="rl">Orders analysed</div></div><div class="r"><div class="rn">12</div><div class="rl">Report panels</div></div><div class="r"><div class="rn">9</div><div class="rl">Auto-written insights</div></div></div>
+            <div class="ai-actions"><a class="btn btn-primary" href="ai/event-dashboard.html" target="_blank" rel="noopener">Open live demo ↗</a></div>
+          </div>
+        </article>
+        <article class="ai-card">
+          <a class="thumb" href="ai/meta-ads-dashboard.html" target="_blank" rel="noopener"><img src="ai/img/meta-ads-dashboard.jpg" alt="Meta Ads weekly dashboard preview" loading="lazy"></a>
+          <div class="card-body">
+            <span class="tag">Paid social · Weekly reporting</span>
+            <h3>Meta Ads weekly dashboard</h3>
+            <p>Converts an ad-level Meta export into a filterable executive dashboard: spend, ROAS and CPA by category and campaign, scored best and worst ads, video hook and retention, and next-week actions.</p>
+            <div class="result"><div class="r"><div class="rn">171</div><div class="rl">Ads scored</div></div><div class="r"><div class="rn">4</div><div class="rl">Views incl. actions</div></div><div class="r"><div class="rn">Weekly</div><div class="rl">Reporting cadence</div></div></div>
+            <div class="ai-actions"><a class="btn btn-primary" href="ai/meta-ads-dashboard.html" target="_blank" rel="noopener">Open live demo ↗</a></div>
+          </div>
+        </article>
+        <article class="ai-card">
+          <a class="thumb" href="ai/roas-calculator.html" target="_blank" rel="noopener"><img src="ai/img/roas-calculator.jpg" alt="ROAS calculator preview" loading="lazy"></a>
+          <div class="card-body">
+            <span class="tag">Unit economics · Budgeting</span>
+            <h3>ROAS &amp; profitability calculator</h3>
+            <p>Sets the ROAS floor and CPA ceiling from real unit costs, so ad budgets are judged on profit, not revenue. Enter price, COGS, fulfilment and fees to see breakeven and target ROAS live.</p>
+            <div class="result"><div class="r"><div class="rn">Breakeven</div><div class="rl">ROAS floor</div></div><div class="r"><div class="rn">Target</div><div class="rl">ROAS for margin</div></div><div class="r"><div class="rn">Max CPA</div><div class="rl">Per sale</div></div></div>
+            <div class="ai-actions"><a class="btn btn-primary" href="ai/roas-calculator.html" target="_blank" rel="noopener">Try the calculator ↗</a></div>
+          </div>
+        </article>
+      </div>
+      <p class="ai-note">All brands, products, people and figures in these demos are anonymised sample data.</p>
+    </div>
+  </section>
+
   <section class="value-sec" id="value">
     <div class="wrap">
       <div class="sec-head">
@@ -673,7 +751,7 @@
 
   <footer>
     <div class="wrap foot">
-      <span>© 2026 Toh Leong Chin. All rights reserved.</span>
+      <span>© 2026 Toh Leong Chin. All rights reserved. Designed and built with AI-assisted development.</span>
       <span><a href="#top">Back to top ↑</a></span>
     </div>
   </footer>

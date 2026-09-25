@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROAS Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #f8f9fb;
+    --surface:  #ffffff;
+    --surface2: #f3f4f6;
+    --surface3: #edf0f3;
+    --border:   #e2e5ea;
+    --border2:  #d0d5dd;
+    --text:     #0f1117;
+    --text2:    #4b5563;
+    --text3:    #9ca3af;
+    --green:    #059669;
+    --green-bg: #ecfdf5;
+    --green-bd: #a7f3d0;
+    --amber:    #d97706;
+    --amber-bg: #fffbeb;
+    --amber-bd: #fde68a;
+    --red:      #dc2626;
+    --red-bg:   #fef2f2;
+    --red-bd:   #fecaca;
+    --blue:     #2563eb;
+    --blue-bg:  #eff6ff;
+    --blue-bd:  #bfdbfe;
+    --ink:      #1e293b;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 13px; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    padding: 44px 28px 80px;
+  }
+
+  .page { max-width: 1000px; margin: 0 auto; }
+
+  /* HEADER */
+  .hdr {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding-bottom: 22px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+    gap: 16px;
+    animation: fadeDown .4s ease both;
+  }
+
+  .hdr-kicker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 6px;
+  }
+
+  .hdr-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -.03em;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+
+  .hdr-title span { color: var(--text2); font-weight: 400; }
+
+  .hdr-stats { display: flex; gap: 28px; flex-wrap: wrap; }
+
+  .hdr-stat-lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 3px;
+    text-align: right;
+  }
+
+  .hdr-stat-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  /* WARNING */
+  .banner {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    background: var(--red-bg);
+    border: 1px solid var(--red-bd);
+    border-radius: 6px;
+    padding: 10px 16px;
+    margin-bottom: 24px;
+    font-size: 12px;
+    color: var(--red);
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: .03em;
+  }
+  .banner.show { display: flex; }
+  .banner-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+
+  /* LAYOUT */
+  .layout {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 720px) { .layout { grid-template-columns: 1fr; } }
+
+  /* PANELS */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    animation: fadeUp .45s ease both;
+  }
+  .panel:nth-child(2) { animation-delay: .06s; }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .panel-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--text2);
+  }
+
+  .badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    padding: 2px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+  .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
+  .badge-blue  { background: var(--blue-bg);  color: var(--blue);  border: 1px solid var(--blue-bd); }
+  .badge-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-bd); }
+
+  .panel-body { padding: 18px; }
+
+  /* FIELDS */
+  .field {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .field:last-child { border-bottom: none; }
+
+  .field-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+  }
+
+  .field-hint {
+    font-size: 10px;
+    color: var(--text3);
+    font-weight: 400;
+    display: block;
+    margin-top: 1px;
+  }
+
+  .inp-wrap {
+    display: flex;
+    align-items: center;
+    background: var(--surface2);
+    border: 1.5px solid var(--border2);
+    border-radius: 5px;
+    overflow: hidden;
+    transition: border-color .15s, box-shadow .15s;
+    width: 115px;
+    flex-shrink: 0;
+  }
+  .inp-wrap:focus-within {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+  }
+
+  .inp-sym {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text3);
+    padding: 0 9px;
+    background: var(--surface3);
+    border-right: 1.5px solid var(--border2);
+    height: 34px;
+    display: flex;
+    align-items: center;
+    user-select: none;
+    min-width: 28px;
+    justify-content: center;
+  }
+
+  input[type="number"] {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0 9px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    outline: none;
+    height: 34px;
+    width: 0;
+    min-width: 0;
+    text-align: right;
+    -moz-appearance: textfield;
+  }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  hr.rule {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 14px 0;
+  }
+
+  /* OUTPUT PANEL */
+  .out-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .out-cell {
+    background: var(--surface);
+    padding: 16px 18px;
+    transition: background .15s;
+  }
+  .out-cell:hover { background: var(--surface2); }
+  .out-cell.green-tint { background: var(--green-bg); }
+  .out-cell.green-tint:hover { background: #d1fae5; }
+  .out-cell.red-tint { background: var(--red-bg); }
+
+  .out-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+
+  .out-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -.02em;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .out-val.green { color: var(--green); }
+  .out-val.amber { color: var(--amber); }
+  .out-val.red   { color: var(--red); }
+  .out-val.blue  { color: var(--blue); }
+
+  .out-sub {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+
+  /* ROAS BLOCK */
+  .roas-block {
+    padding: 20px 18px;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+  }
+
+  .roas-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .roas-lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 5px;
+  }
+
+  .roas-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 38px;
+    font-weight: 700;
+    letter-spacing: -.03em;
+    line-height: 1;
+  }
+  .roas-val.amber { color: var(--amber); }
+  .roas-val.green { color: var(--green); }
+  .roas-val.red   { color: var(--red); }
+
+  .roas-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* BARS */
+  .bar-row { margin-bottom: 8px; }
+
+  .bar-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+  .bar-top-lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+  .bar-top-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text2);
+  }
+
+  .bar-track {
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width .55s cubic-bezier(.25,1,.5,1);
+  }
+  .bar-fill.amber { background: var(--amber); }
+  .bar-fill.green { background: var(--green); }
+
+  .bar-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    color: var(--text3);
+  }
+
+  /* CALLOUT */
+  .callout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1.5px solid var(--border2);
+    border-radius: 6px;
+    padding: 13px 16px;
+    margin-top: 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .callout-lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 4px;
+  }
+  .callout-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--blue);
+  }
+  .callout-note {
+    font-size: 11px;
+    color: var(--text3);
+    text-align: right;
+    line-height: 1.5;
+    max-width: 210px;
+  }
+
+  /* FORMULA BOX */
+  .formula-box {
+    margin-top: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    animation: fadeUp .45s .15s ease both;
+  }
+
+  .formula-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .formula-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  @media (max-width: 600px) { .formula-grid { grid-template-columns: 1fr; } }
+
+  .formula-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 11px 13px;
+  }
+
+  .formula-item-lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 5px;
+  }
+
+  .formula-item-eq {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .formula-item-eq strong { color: var(--blue); }
+
+  .formula-note {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  /* COLORS */
+  .c-green { color: var(--green); }
+  .c-amber { color: var(--amber); }
+  .c-blue  { color: var(--blue); }
+  .c-red   { color: var(--red); }
+
+  /* ANIMATIONS */
+  @keyframes fadeDown {
+    from { opacity:0; transform:translateY(-8px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(12px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .pop { animation: pop .22s ease; }
+  @keyframes pop {
+    0%   { opacity:1; }
+    35%  { opacity:.35; transform:scale(.97); }
+    100% { opacity:1; transform:scale(1); }
+  }
+</style>
+</head>
+<body><div style="background:#111827;color:#fff;font:600 12px/1.4 system-ui,sans-serif;text-align:center;padding:7px 12px">Interactive demo · <a href="../index.html#ai" style="color:inherit;text-decoration:underline">Back to portfolio</a></div>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div>
+      <div class="hdr-kicker">Ad Performance · ROAS Calculator</div>
+      <div class="hdr-title">Return on Ad Spend <span>/ Profitability Analysis</span></div>
+    </div>
+    <div class="hdr-stats">
+      <div>
+        <div class="hdr-stat-lbl">Breakeven ROAS</div>
+        <div class="hdr-stat-val c-amber" id="hdrBE">—</div>
+      </div>
+      <div>
+        <div class="hdr-stat-lbl">Target ROAS</div>
+        <div class="hdr-stat-val c-green" id="hdrTG">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WARNING -->
+  <div class="banner" id="banner">
+    <div class="banner-dot"></div>
+    <span id="bannerText">Costs exceed sale price — review inputs.</span>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- INPUTS -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Inputs</span>
+        <span class="badge badge-green">Live</span>
+      </div>
+      <div class="panel-body">
+
+        <div class="field">
+          <div>
+            <span class="field-label">Average Sale Price</span>
+          </div>
+          <div class="inp-wrap">
+            <span class="inp-sym">$</span>
+            <input type="number" id="salePrice" value="100" min="0" step="0.01">
+          </div>
+        </div>
+
+        <hr class="rule">
+
+        <div class="field">
+          <div>
+            <span class="field-label">Cost of Goods (COGS)</span>
+          </div>
+          <div class="inp-wrap">
+            <span class="inp-sym">$</span>
+            <input type="number" id="cogs" value="30" min="0" step="0.01">
+          </div>
+        </div>
+
+        <div class="field">
+          <div>
+            <span class="field-label">Fulfillment Cost</span>
+            <span class="field-hint">shipping + handling</span>
+          </div>
+          <div class="inp-wrap">
+            <span class="inp-sym">$</span>
+            <input type="number" id="fulfillment" value="8" min="0" step="0.01">
+          </div>
+        </div>
+
+        <div class="field">
+          <div>
+            <span class="field-label">Credit Card Fees</span>
+            <span class="field-hint">% of sale price</span>
+          </div>
+          <div class="inp-wrap">
+            <span class="inp-sym">%</span>
+            <input type="number" id="ccFee" value="2.9" min="0" max="100" step="0.01">
+          </div>
+        </div>
+
+        <div class="field">
+          <div>
+            <span class="field-label">Merchant Processing Fees</span>
+            <span class="field-hint">% of sale price</span>
+          </div>
+          <div class="inp-wrap">
+            <span class="inp-sym">%</span>
+            <input type="number" id="merchantFee" value="0.5" min="0" max="100" step="0.01">
+          </div>
+        </div>
+
+        <hr class="rule">
+
+        <div class="field">
+          <div>
+            <span class="field-label">Desired Net Margin</span>
+            <span class="field-hint">profit target after all costs</span>
+          </div>
+          <div class="inp-wrap">
+            <span class="inp-sym">%</span>
+            <input type="number" id="desiredMargin" value="20" min="0" max="100" step="0.1">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- OUTPUTS -->
+    <div class="panel" style="animation-delay:.08s;">
+      <div class="panel-header">
+        <span class="panel-title">Results</span>
+        <span class="badge badge-amber">Per Unit</span>
+      </div>
+
+      <!-- Metric grid -->
+      <div class="out-grid">
+        <div class="out-cell">
+          <div class="out-label">Total Cost</div>
+          <div class="out-val red" id="totalCost">—</div>
+          <div class="out-sub">all non-ad costs per unit</div>
+        </div>
+        <div class="out-cell">
+          <div class="out-label">Cost Margin</div>
+          <div class="out-val" id="costMargin">—</div>
+          <div class="out-sub">costs as % of price</div>
+        </div>
+        <div class="out-cell green-tint">
+          <div class="out-label">Gross Profit Margin</div>
+          <div class="out-val green" id="grossMargin">—</div>
+          <div class="out-sub">price minus all costs</div>
+        </div>
+        <div class="out-cell green-tint">
+          <div class="out-label">Gross Profit ($)</div>
+          <div class="out-val green" id="grossProfit">—</div>
+          <div class="out-sub">per unit sold</div>
+        </div>
+      </div>
+
+      <!-- ROAS block -->
+      <div class="roas-block">
+        <div class="roas-pair">
+          <div>
+            <div class="roas-lbl">Breakeven ROAS</div>
+            <div class="roas-val amber" id="breakevenRoas">—</div>
+            <div class="roas-sub" id="beSub">—</div>
+          </div>
+          <div>
+            <div class="roas-lbl">Target ROAS</div>
+            <div class="roas-val green" id="targetRoas">—</div>
+            <div class="roas-sub" id="tgSub">—</div>
+          </div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-top">
+            <span class="bar-top-lbl">Breakeven</span>
+            <span class="bar-top-val" id="beBarVal">—</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill amber" id="beBar" style="width:0%"></div></div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-top">
+            <span class="bar-top-lbl">Target</span>
+            <span class="bar-top-val" id="tgBarVal">—</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill green" id="tgBar" style="width:0%"></div></div>
+        </div>
+
+        <div class="bar-scale">
+          <span>1×</span><span>2×</span><span>3×</span><span>4×</span><span>5×</span><span>6×</span>
+        </div>
+
+        <div class="callout">
+          <div>
+            <div class="callout-lbl">Max Ad Spend / Sale</div>
+            <div class="callout-val" id="adBudget">—</div>
+          </div>
+          <div class="callout-note" id="calloutNote">—</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FORMULA BOX -->
+  <div class="formula-box">
+    <div class="formula-title">Formula Reference — How These Numbers Are Derived</div>
+    <div class="formula-grid">
+      <div class="formula-item">
+        <div class="formula-item-lbl">Breakeven ROAS</div>
+        <div class="formula-item-eq"><strong>1 ÷ Gross Margin %</strong></div>
+        <div class="formula-note">The minimum ROAS at which ad spend = gross profit. Below this, every sale loses money after costs. Directly usable as the ROAS floor in Meta Ads Manager.</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-item-lbl">Target ROAS</div>
+        <div class="formula-item-eq"><strong>1 ÷ (Gross Margin % − Desired Margin %)</strong></div>
+        <div class="formula-note">The ROAS required to retain your desired net margin after ad spend. Set this as your campaign target ROAS in Meta or Google Ads.</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-item-lbl">Gross Profit Margin</div>
+        <div class="formula-item-eq"><strong>(Price − All Costs) ÷ Price</strong></div>
+        <div class="formula-note">All non-ad costs: COGS, fulfillment, CC fees, merchant fees. This is the gross margin available to absorb ad spend and generate profit.</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-item-lbl">Max Ad Spend / Sale</div>
+        <div class="formula-item-eq"><strong>Gross Profit − Desired Profit $</strong></div>
+        <div class="formula-note">The maximum you can pay to acquire one sale (your CPA ceiling) while still hitting your margin target. Use this as your target CPA in campaigns.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const gv = id => parseFloat($(id).value) || 0;
+
+  const f$ = n => {
+    const sign = n < 0 ? '-$' : '$';
+    return sign + Math.abs(n).toFixed(2);
+  };
+
+  const fPct = n => n.toFixed(1) + '%';
+  const fX   = n => n.toFixed(2) + '×';
+
+  function set(id, val, cls) {
+    const el = $(id);
+    if (!el) return;
+    el.textContent = val;
+    if (cls !== undefined) {
+      ['green','amber','red','blue'].forEach(c => el.classList.remove(c));
+      if (cls) el.classList.add(cls);
+    }
+    el.classList.remove('pop');
+    void el.offsetWidth;
+    el.classList.add('pop');
+  }
+
+  function calc() {
+    const price   = gv('salePrice');
+    const cogs    = gv('cogs');
+    const ful     = gv('fulfillment');
+    const ccFee   = gv('ccFee') / 100;
+    const mFee    = gv('merchantFee') / 100;
+    const dMargin = gv('desiredMargin') / 100;
+
+    // Total non-ad costs per unit
+    const feeCost   = price * (ccFee + mFee);
+    const totalCost = cogs + ful + feeCost;
+
+    // Gross profit and margin
+    const grossProfit = price - totalCost;
+    const grossMargin = price > 0 ? grossProfit / price : 0;  // as decimal
+    const costMargin  = price > 0 ? totalCost / price : 0;
+
+    // Desired profit in $
+    const desiredProfit = price * dMargin;
+
+    // Max ad spend per sale (CPA ceiling)
+    const adBudget = grossProfit - desiredProfit;
+
+    /*
+     * BREAKEVEN ROAS = 1 / Gross Margin %
+     * Derivation: at breakeven, Revenue / Ad Spend = ROAS
+     * Ad Spend = Gross Profit (you spend all your gross profit on ads, leaving zero net)
+     * ROAS = Revenue / Gross Profit = Price / (Price × Gross Margin %) = 1 / Gross Margin %
+     */
+    const beRoas = grossMargin > 0 ? 1 / grossMargin : 0;
+
+    /*
+     * TARGET ROAS = 1 / (Gross Margin % - Desired Margin %)
+     * Derivation: Ad Spend = Gross Profit - Desired Profit
+     *           = Price × Gross Margin % - Price × Desired Margin %
+     *           = Price × (Gross Margin % - Desired Margin %)
+     * ROAS = Price / Ad Spend = 1 / (Gross Margin % - Desired Margin %)
+     */
+    const remainingMargin = grossMargin - dMargin;
+    const tgRoas = remainingMargin > 0 ? 1 / remainingMargin : 0;
+
+    // Warning: costs exceed price
+    const warn = totalCost >= price;
+    $('banner').classList.toggle('show', warn);
+    if (warn) {
+      $('bannerText').textContent =
+        `Total costs (${f$(totalCost)}) meet or exceed sale price (${f$(price)}) — no gross margin to work with.`;
+    }
+
+    // Outputs
+    set('totalCost',    f$(totalCost),  'red');
+    set('costMargin',   fPct(costMargin * 100), costMargin > 0.9 ? 'red' : costMargin > 0.7 ? 'amber' : '');
+    set('grossMargin',  fPct(grossMargin * 100), grossProfit >= 0 ? 'green' : 'red');
+    set('grossProfit',  f$(grossProfit), grossProfit >= 0 ? 'green' : 'red');
+
+    set('breakevenRoas', beRoas > 0 ? fX(beRoas) : 'N/A', 'amber');
+    set('targetRoas',    tgRoas > 0 ? fX(tgRoas) : 'N/A', tgRoas > 0 ? 'green' : 'red');
+    set('adBudget',      adBudget > 0 ? f$(adBudget) : '$0.00', adBudget > 0 ? '' : 'red');
+
+    $('beSub').textContent = beRoas > 0
+      ? `1 ÷ ${fPct(grossMargin * 100)} gross margin`
+      : 'no margin available';
+    $('tgSub').textContent = tgRoas > 0
+      ? `1 ÷ (${fPct(grossMargin * 100)} − ${fPct(dMargin * 100)})`
+      : remainingMargin <= 0 ? 'target margin exceeds gross margin' : 'N/A';
+
+    $('calloutNote').textContent = adBudget > 0
+      ? `Max CPA to achieve ${gv('desiredMargin')}% net margin on a ${f$(price)} sale.`
+      : 'Reduce desired margin or cut costs to free up ad budget.';
+
+    // Header
+    $('hdrBE').textContent = beRoas > 0 ? fX(beRoas) : '—';
+    $('hdrTG').textContent = tgRoas > 0 ? fX(tgRoas) : '—';
+
+    // Bar labels
+    $('beBarVal').textContent = beRoas > 0 ? fX(beRoas) : '—';
+    $('tgBarVal').textContent = tgRoas > 0 ? fX(tgRoas) : '—';
+
+    // Bars (scale 1x to 6x)
+    const MAX = 6;
+    $('beBar').style.width = beRoas > 0 ? Math.min((beRoas / MAX) * 100, 100) + '%' : '0%';
+    $('tgBar').style.width = tgRoas > 0 ? Math.min((tgRoas / MAX) * 100, 100) + '%' : '0%';
+  }
+
+  ['salePrice','cogs','fulfillment','ccFee','merchantFee','desiredMargin']
+    .forEach(id => $(id).addEventListener('input', calc));
+
+  calc();
+</script>
+</body>
+</html>

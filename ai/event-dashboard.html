@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Aerion Roadshow · Consumer Tech Fair · Executive Dashboard (Sample Data)</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#06070d;--s:#0e1018;--s2:#111420;--b:#1e2230;--b2:#252d40;
+  --gold:#c8a84b;--gd:rgba(200,168,75,.13);
+  --blue:#3d7fff;--teal:#25c4a0;--coral:#ff6b6b;
+  --lav:#8b7ff5;--org:#ff9f43;--grn:#10b981;--pink:#e84393;--cyan:#22d3ee;
+  --txt:#e8eaf2;--mu:#6b7280;--di:#9ca3af;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--txt);font-family:'DM Mono',monospace;padding:28px;}
+/* Header */
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--b);}
+.hdr h1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-.5px;}
+.hdr h1 em{color:var(--gold);font-style:normal;}
+.hdr p{font-size:10px;color:var(--mu);margin-top:4px;letter-spacing:1.4px;text-transform:uppercase;}
+.badge{background:var(--gd);border:1px solid var(--gold);color:var(--gold);font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:4px 11px;border-radius:3px;display:inline-block;}
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:12px;}
+.kpi{background:var(--s);border:1px solid var(--b);border-radius:7px;padding:14px 15px;position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac,var(--gold));}
+.kl{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:5px;}
+.kv{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;line-height:1;}
+.ks{font-size:9px;color:var(--mu);margin-top:4px;}
+.up{color:var(--grn);}.hi{color:var(--gold);}
+/* Layout */
+.r2{display:grid;grid-template-columns:1.5fr 1fr;gap:12px;margin-bottom:12px;}
+.r2b{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.r2c{display:grid;grid-template-columns:1fr 1.1fr;gap:12px;margin-bottom:12px;}
+.full{margin-bottom:12px;}
+.card{background:var(--s);border:1px solid var(--b);border-radius:7px;padding:18px;}
+.ct{font-family:'Syne',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+.cw{position:relative;height:210px;}.cw-s{position:relative;height:180px;}
+/* Heatmap */
+.hm-sc{overflow-x:auto;}
+.hm{display:grid;grid-template-columns:52px repeat(13,1fr);gap:2px;min-width:700px;}
+.hm-l{font-size:9px;color:var(--mu);display:flex;align-items:center;padding-right:4px;white-space:nowrap;}
+.hm-hl{font-size:7.5px;color:var(--mu);text-align:center;padding-bottom:2px;}
+.hm-c{height:40px;border-radius:3px;position:relative;transition:opacity .15s;cursor:default;}
+.hm-c:hover{opacity:.75;}
+.hm-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
+.hm-gv{font-size:8px;color:rgba(255,255,255,.9);font-weight:500;line-height:1.4;}
+.hm-od{font-size:7px;color:rgba(255,255,255,.5);line-height:1.4;}
+.hm-leg{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:8.5px;color:var(--mu);}
+.hm-bar{height:6px;width:90px;border-radius:3px;background:linear-gradient(to right,#141820,var(--gold));}
+/* Tables */
+.t{width:100%;border-collapse:collapse;}
+.t thead th{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);padding:0 6px 7px 0;text-align:left;font-weight:400;border-bottom:1px solid var(--b);}
+.t thead th.r,.t tbody td.r{text-align:right;padding-right:0;}
+.t tbody tr{border-bottom:1px solid var(--b);}
+.t tbody tr:last-child{border-bottom:none;}
+.t tbody tr:hover{background:rgba(255,255,255,.02);}
+.t tbody td{padding:6px 6px 6px 0;vertical-align:middle;}
+.pill{display:inline-block;font-size:7.5px;letter-spacing:.6px;text-transform:uppercase;padding:2px 5px;border-radius:2px;font-weight:500;white-space:nowrap;}
+.sku-t{font-size:8px;color:var(--mu);}
+.barcell{display:flex;align-items:center;justify-content:flex-end;gap:5px;}
+.barl{height:3px;border-radius:2px;}
+.vb{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;}
+.sc{max-height:420px;overflow-y:auto;}
+.sc::-webkit-scrollbar{width:3px;}.sc::-webkit-scrollbar-track{background:var(--b);}.sc::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px;}
+/* Cat bars */
+.cr{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.cr-l{font-size:9px;color:var(--di);width:115px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cr-bo{flex:1;height:4px;background:var(--b);border-radius:3px;overflow:hidden;}
+.cr-bi{height:100%;border-radius:3px;}
+.cr-vs{display:flex;gap:8px;width:110px;flex-shrink:0;justify-content:flex-end;align-items:center;}
+.cr-v{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;}
+.cr-q{font-size:8px;color:var(--mu);}
+/* Bundles */
+.bg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.bc{background:var(--s2);border:1px solid var(--b);border-radius:5px;padding:12px;display:flex;gap:10px;align-items:flex-start;}
+.bct{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--gold);min-width:28px;line-height:1;flex-shrink:0;}
+.bct span{display:block;font-size:7px;color:var(--mu);font-family:'DM Mono',monospace;font-weight:400;}
+.bit{display:flex;flex-direction:column;gap:3px;}
+.bi{font-size:8.5px;color:var(--di);display:flex;gap:4px;line-height:1.35;align-items:flex-start;}
+.bi::before{content:'·';color:var(--gold);flex-shrink:0;}
+/* Region legend */
+.rr{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--b);font-size:9.5px;}
+.rr:last-child{border-bottom:none;}
+/* SPU */
+.spu-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.spu-tab{padding:5px 13px;border-radius:4px;font-size:9px;letter-spacing:1px;text-transform:uppercase;font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;border:1px solid var(--b);color:var(--mu);background:transparent;transition:all .2s;}
+.spu-tab.active{background:rgba(200,168,75,.12);border-color:var(--gold);color:var(--gold);}
+.spu-panel{display:none;}.spu-panel.active{display:block;}
+.spu-meta{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
+.spu-k{background:var(--s2);border:1px solid var(--b);border-radius:5px;padding:7px 12px;}
+.spu-kl{font-size:8px;color:var(--mu);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;}
+.spu-kv{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--gold);}
+.ntag{display:inline-block;font-size:8px;background:rgba(37,196,160,.1);border:1px solid rgba(37,196,160,.28);color:var(--teal);padding:2px 7px;border-radius:3px;margin-bottom:10px;}
+/* Observations */
+.obs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.obs-card{background:var(--s2);border:1px solid var(--b);border-radius:6px;padding:12px 13px;}
+.obs-icon{font-size:14px;margin-bottom:5px;}
+.obs-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--gold);margin-bottom:4px;}
+.obs-body{font-size:9.5px;color:var(--di);line-height:1.6;}
+.obs-body strong{color:var(--txt);}
+/* Map tooltip */
+.sg-tip{position:fixed;background:#0e1018;border:1px solid #1e2230;padding:7px 11px;border-radius:5px;font-family:'DM Mono',monospace;font-size:10px;color:#e8eaf2;pointer-events:none;display:none;z-index:200;white-space:nowrap;}
+</style>
+</head>
+<body><div style="background:#c8a84b;color:#06070d;font:600 12px/1.4 system-ui,sans-serif;text-align:center;padding:7px 12px">Sample data · Brand, products, staff and figures are anonymised to demonstrate the AI reporting workflow · <a href="../index.html#ai" style="color:inherit;text-decoration:underline">Back to portfolio</a></div>
+
+<div class="hdr">
+  <div>
+    <h1>Aerion Roadshow <em>/ Consumer Tech Fair · Executive Dashboard</em></h1>
+    <p>Convention centre · 4-day consumer tech fair · Roadshow sheet only · Cancelled &amp; $0 Item Total excluded</p>
+  </div>
+  <div style="text-align:right">
+    <div class="badge">Executive Summary</div>
+    <div style="font-size:10px;color:var(--mu);margin-top:5px">1,217 orders · 46 staff · SG local time</div>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="kpis">
+  <div class="kpi" style="--ac:var(--gold)">
+    <div class="kl">Total GMV (SGD)</div>
+    <div class="kv">$661K</div>
+    <div class="ks"><span class="up">+142%</span> Day 1 → Day 4</div>
+  </div>
+  <div class="kpi" style="--ac:var(--teal)">
+    <div class="kl">Total Orders</div>
+    <div class="kv">1,217</div>
+    <div class="ks">Excl. cancelled</div>
+  </div>
+  <div class="kpi" style="--ac:var(--blue)">
+    <div class="kl">AOV per Order</div>
+    <div class="kv">$543</div>
+    <div class="ks">Deduped by Order ID</div>
+  </div>
+  <div class="kpi" style="--ac:var(--coral)">
+    <div class="kl">Highest Order</div>
+    <div class="kv">$4,187</div>
+    <div class="ks">Order #A-10486</div>
+  </div>
+  <div class="kpi" style="--ac:var(--lav)">
+    <div class="kl">Top Staff</div>
+    <div class="kv" style="font-size:13px;padding-top:2px">Staff 01</div>
+    <div class="ks"><span class="hi">$62,563 GMV</span></div>
+  </div>
+  <div class="kpi" style="--ac:var(--org)">
+    <div class="kl">Top Region</div>
+    <div class="kv" style="font-size:13px;padding-top:2px">East</div>
+    <div class="ks">391 orders · <span class="hi">$247K</span></div>
+  </div>
+</div>
+
+<!-- Trend + Category -->
+<div class="r2">
+  <div class="card">
+    <div class="ct"><span class="dot"></span>Daily GMV &amp; Order Trend — 4 Days</div>
+    <div class="cw"><canvas id="dailyChart"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="ct"><span class="dot" style="background:var(--org)"></span>Revenue Contribution by Category</div>
+    <div class="ntag">Item-level revenue · Column P ($0 excluded)</div>
+    <div id="catBars"></div>
+  </div>
+</div>
+
+<!-- Heatmap -->
+<div class="full card">
+  <div class="ct"><span class="dot" style="background:var(--teal)"></span>Hourly Purchase Timing — GMV (SGD) &nbsp;<span style="font-size:8px;color:var(--mu);letter-spacing:0;text-transform:none;font-family:'DM Mono'">[SG local time · booth ~12:00–21:00]</span></div>
+  <div class="hm-sc"><div class="hm" id="heatmap"></div></div>
+  <div class="hm-leg"><span>Low</span><div class="hm-bar"></div><span>High</span><span style="margin-left:12px;color:var(--di)">Top = GMV · Bottom = order count</span></div>
+</div>
+
+<!-- Products + Donut + Payment -->
+<div class="r2b">
+  <div class="card">
+    <div class="ct"><span class="dot" style="background:var(--coral)"></span>All Products — Units &amp; Revenue (Col P &gt; $0 Only)</div>
+    <div class="sc">
+      <table class="t">
+        <thead><tr><th style="width:22px">#</th><th>Product (Col L)</th><th>Category</th><th class="r">Qty</th><th class="r">Revenue</th></tr></thead>
+        <tbody id="prodTbl"></tbody>
+      </table>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div class="card">
+      <div class="ct"><span class="dot" style="background:var(--lav)"></span>Category Mix</div>
+      <div class="cw-s"><canvas id="donutChart"></canvas></div>
+      <div id="donutLeg" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="dot" style="background:var(--pink)"></span>Payment Methods by GMV</div>
+      <div style="position:relative;height:175px"><canvas id="payChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- Bundles -->
+<div class="full card">
+  <div class="ct"><span class="dot" style="background:var(--pink)"></span>Bundle Combinations — Paid Items Purchased Under Same Order ID</div>
+  <div class="ntag">Only items with Item Total &gt; $0 · Free gifts and accessories excluded</div>
+  <div class="bg" id="bundles"></div>
+</div>
+
+<!-- Employee + Map -->
+<div class="r2c">
+  <div class="card">
+    <div class="ct"><span class="dot" style="background:var(--gold)"></span>Employee GMV Ranking — Excl. brand-direct</div>
+    <div class="sc" style="max-height:380px">
+      <table class="t">
+        <thead><tr><th style="width:24px">#</th><th>Employee</th><th class="r">GMV</th></tr></thead>
+        <tbody id="empTbl"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div class="card">
+      <div class="ct"><span class="dot" style="background:var(--cyan)"></span>Delivery Map — Singapore 5 Regions &nbsp;<span style="font-size:8px;color:var(--mu);letter-spacing:0;text-transform:none;font-family:'DM Mono'">[hover for details]</span></div>
+      <!-- Singapore island SVG - accurate outline -->
+      <svg id="sgMap" viewBox="0 0 700 400" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block">
+        <!-- WEST: Jurong, Bukit Batok, Bukit Panjang, Choa Chu Kang, Clementi -->
+        <path id="rw" class="sg-r" stroke="#06070d" stroke-width="1.3" stroke-linejoin="round"
+          d="M55,92 L78,74 L106,58 L136,46 L162,40 L186,42 L204,52 L216,66 L222,84
+             L224,104 L220,126 L212,146 L200,164 L184,180 L166,194 L146,204
+             L126,212 L104,216 L82,212 L64,202 L50,188 L40,172 L34,154
+             L32,136 L34,118 L42,102 Z"/>
+        <!-- Jurong Island offshore -->
+        <path fill="#25c4a0" stroke="#06070d" stroke-width="0.8" opacity="0.7"
+          d="M58,232 L76,224 L94,228 L98,242 L84,252 L64,246 Z"/>
+
+        <!-- NORTH: Woodlands, Sembawang, Yishun, Mandai -->
+        <path id="rn" class="sg-r" stroke="#06070d" stroke-width="1.3" stroke-linejoin="round"
+          d="M186,42 L220,30 L258,20 L300,14 L342,16 L378,24 L406,36 L424,50
+             L426,68 L416,84 L398,96 L374,106 L346,112 L316,116 L286,116
+             L256,112 L228,104 L216,90 L216,66 L204,52 Z"/>
+
+        <!-- NORTH-EAST: Sengkang, Hougang, Punggol, Serangoon -->
+        <path id="rne" class="sg-r" stroke="#06070d" stroke-width="1.3" stroke-linejoin="round"
+          d="M406,36 L438,30 L468,32 L496,42 L516,58 L522,76 L516,94
+             L500,108 L478,118 L452,124 L424,122 L398,114 L374,106
+             L398,96 L416,84 L426,68 Z"/>
+        <!-- Pulau Ubin -->
+        <path fill="#3d7fff" stroke="#06070d" stroke-width="0.8" opacity="0.7"
+          d="M530,38 L556,30 L572,36 L568,50 L546,56 L528,50 Z"/>
+
+        <!-- EAST: Bedok, Tampines, Pasir Ris, Changi -->
+        <path id="re" class="sg-r" stroke="#06070d" stroke-width="1.3" stroke-linejoin="round"
+          d="M496,42 L530,48 L562,62 L592,80 L614,100 L622,124 L616,148
+             L600,168 L576,182 L548,190 L520,188 L494,178 L472,164 L456,148
+             L448,130 L450,112 L452,124 L478,118 L500,108 L516,94 L522,76
+             L516,58 Z"/>
+
+        <!-- CENTRAL: Bishan, Toa Payoh, Novena, Marine Parade, Buona Vista, Queenstown -->
+        <path id="rc" class="sg-r" stroke="#06070d" stroke-width="1.3" stroke-linejoin="round"
+          d="M216,90 L228,104 L256,112 L286,116 L316,116 L346,112 L374,106
+             L398,114 L424,122 L452,124 L450,112 L448,130 L456,148 L472,164
+             L468,180 L450,194 L426,206 L398,214 L368,220 L336,224 L304,224
+             L272,220 L244,212 L218,200 L200,184 L200,164 L212,146 L220,126
+             L224,104 Z"/>
+
+        <!-- Southern Islands -->
+        <ellipse cx="340" cy="310" rx="22" ry="11" fill="#ff9f43" stroke="#06070d" stroke-width="0.8" opacity="0.6"/>
+        <ellipse cx="296" cy="322" rx="15" ry="7" fill="#ff9f43" stroke="#06070d" stroke-width="0.8" opacity="0.6"/>
+        <ellipse cx="384" cy="306" rx="12" ry="6" fill="#ff9f43" stroke="#06070d" stroke-width="0.8" opacity="0.6"/>
+
+        <!-- Region Labels -->
+        <text x="108" y="148" font-family="Syne,sans-serif" font-size="12" font-weight="700" fill="white" text-anchor="middle">West</text>
+        <text id="wl1" x="108" y="163" font-family="DM Mono,monospace" font-size="9.5" fill="rgba(255,255,255,.85)" text-anchor="middle"></text>
+        <text id="wl2" x="108" y="175" font-family="DM Mono,monospace" font-size="8.5" fill="rgba(255,255,255,.6)" text-anchor="middle"></text>
+
+        <text x="308" y="68" font-family="Syne,sans-serif" font-size="12" font-weight="700" fill="white" text-anchor="middle">North</text>
+        <text id="nl1" x="308" y="82" font-family="DM Mono,monospace" font-size="9.5" fill="rgba(255,255,255,.85)" text-anchor="middle"></text>
+        <text id="nl2" x="308" y="94" font-family="DM Mono,monospace" font-size="8.5" fill="rgba(255,255,255,.6)" text-anchor="middle"></text>
+
+        <text x="468" y="78" font-family="Syne,sans-serif" font-size="12" font-weight="700" fill="white" text-anchor="middle">North-East</text>
+        <text id="nel1" x="468" y="93" font-family="DM Mono,monospace" font-size="9.5" fill="rgba(255,255,255,.85)" text-anchor="middle"></text>
+        <text id="nel2" x="468" y="105" font-family="DM Mono,monospace" font-size="8.5" fill="rgba(255,255,255,.6)" text-anchor="middle"></text>
+
+        <text x="548" y="128" font-family="Syne,sans-serif" font-size="12" font-weight="700" fill="white" text-anchor="middle">East</text>
+        <text id="el1" x="548" y="143" font-family="DM Mono,monospace" font-size="9.5" fill="rgba(255,255,255,.85)" text-anchor="middle"></text>
+        <text id="el2" x="548" y="155" font-family="DM Mono,monospace" font-size="8.5" fill="rgba(255,255,255,.6)" text-anchor="middle"></text>
+
+        <text x="338" y="168" font-family="Syne,sans-serif" font-size="12" font-weight="700" fill="white" text-anchor="middle">Central</text>
+        <text id="cl1" x="338" y="183" font-family="DM Mono,monospace" font-size="9.5" fill="rgba(255,255,255,.85)" text-anchor="middle"></text>
+        <text id="cl2" x="338" y="195" font-family="DM Mono,monospace" font-size="8.5" fill="rgba(255,255,255,.6)" text-anchor="middle"></text>
+      </svg>
+      <div id="mapLeg" style="margin-top:8px;display:flex;flex-direction:column;gap:4px;"></div>
+    </div>
+
+    <div class="card" style="padding:14px">
+      <div class="ct"><span class="dot" style="background:var(--org)"></span>Self Pick-Up (Column A = Retail, no address)</div>
+      <div style="display:flex;gap:14px;font-size:10px;color:var(--di)">
+        <div><span style="font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:var(--txt)">87</span><br>orders</div>
+        <div><span style="font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:var(--gold)">$4,940</span><br>GMV total</div>
+        <div><span style="font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:var(--teal)">$57</span><br>avg/order</div>
+        <div><span style="font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:var(--lav)">Hair Dryer</span><br>only category</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Self Pick-Up Orders -->
+<div class="full card">
+  <div class="ct"><span class="dot" style="background:var(--grn)"></span>Orders for Self Pick-Up — Column A = "Retail" with No Delivery Address · Paid Items Only</div>
+  <div class="spu-tabs">
+    <button class="spu-tab active" onclick="showSpu(0)">Day 1 (Thu) · 17 orders</button>
+    <button class="spu-tab" onclick="showSpu(1)">Day 2 (Fri) · 22 orders</button>
+    <button class="spu-tab" onclick="showSpu(2)">Day 3 (Sat) · 30 orders</button>
+    <button class="spu-tab" onclick="showSpu(3)">Day 4 (Sun) · 18 orders</button>
+  </div>
+  <div id="spuPanels"></div>
+</div>
+
+<!-- Observations -->
+<div class="full card">
+  <div class="ct"><span class="dot" style="background:var(--grn)"></span>Key Observations &amp; Insights</div>
+  <div class="obs-grid" id="obsGrid"></div>
+</div>
+
+<div class="sg-tip" id="sgTip"></div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────
+const DAILY=[
+  {d:'Day 1 (Thu)',gmv:98821,orders:147},
+  {d:'Day 2 (Fri)',gmv:114304,orders:220},
+  {d:'Day 3 (Sat)',gmv:209063,orders:401},
+  {d:'Day 4 (Sun)',gmv:238674,orders:449},
+];
+const SGH=[10,11,12,13,14,15,16,17,18,19,20,21,22];
+const HMG={'Day 1':[0,80,13681,9825,5752,5368,10141,5670,15123,14255,9220,9708,0],'Day 2':[0,0,5401,8235,11731,5076,5139,6472,14689,18231,23268,13182,2881],'Day 3':[0,102,8040,8602,18236,23737,32478,20538,30203,33942,17986,15199,0],'Day 4':[0,0,3281,16536,21558,33460,32511,35596,36764,33006,17686,8275,0]};
+const HMC={'Day 1':[0,1,17,16,10,11,13,10,23,21,14,11,0],'Day 2':[0,0,10,15,20,16,14,13,31,33,42,25,1],'Day 3':[1,1,14,26,44,45,46,47,50,66,30,31,0],'Day 4':[0,0,11,42,41,61,58,63,58,61,40,14,0]};
+const CC={'Robot Vacuum':'#3d7fff','Stick Vacuum':'#c8a84b','Wet & Dry Vacuum':'#25c4a0','Hair Dryer':'#8b7ff5','Air Purifier':'#ff9f43','Kitchen Appliances':'#ff6b6b','Water Purifier':'#06d6a0','Television':'#e84393','Large Appliances':'#22d3ee','Beauty':'#f97316','Other':'#64748b'};
+
+const CATS=[
+  {n:'Robot Vacuum',      rev:511936,orders:520},
+  {n:'Wet & Dry Vacuum',  rev:40184, orders:105},
+  {n:'Hair Dryer',        rev:33821, orders:492},
+  {n:'Water Purifier',    rev:22837, orders:17},
+  {n:'Stick Vacuum',      rev:20838, orders:95},
+  {n:'Air Purifier',      rev:17447, orders:37},
+  {n:'Kitchen Appliances',rev:17060, orders:39},
+  {n:'Television',        rev:6267,  orders:8},
+  {n:'Large Appliances',  rev:3327,  orders:2},
+];
+
+// Sorted by revenue (Item Total > 0 only, S1 Pro = 8 real paid units)
+const PRODS=[
+  {n:'R9 Ultra Robot Vacuum Mop',            s:'AR-1000',        c:'Robot Vacuum',       q:160, rev:174303},
+  {n:'R9 Master Robot Vacuum Mop',           s:'AR-1007',      c:'Robot Vacuum',       q:123, rev:141617},
+  {n:'R7 Ultra Robot Vacuum Mop',            s:'AR-1014',        c:'Robot Vacuum',       q:91,  rev:69830},
+  {n:'R7 Pro Ultra Robot Vacuum (Black)',    s:'AR-1021',       c:'Robot Vacuum',       q:38,  rev:34856},
+  {n:'Glide 5 Pro Track Robot Vacuum',        s:'AR-1028',   c:'Robot Vacuum',       q:41,  rev:34086},
+  {n:'R7 Master Robot Vacuum Mop',           s:'AR-1035',      c:'Robot Vacuum',       q:36,  rev:31241},
+  {n:'AquaPure 1 Water Purifier',                     s:'AR-1042',        c:'Water Purifier',     q:17,  rev:22837},
+  {n:'W6 Steam Vacuum Cleaner',          s:'AR-1049',    c:'Wet & Dry Vacuum',   q:37,  rev:18920},
+  {n:'P10 Pet Air Purifier',                 s:'AR-1056',         c:'Air Purifier',       q:29,  rev:12973},
+  {n:'W5 Heat Wet & Dry Vacuum',         s:'AR-1063',      c:'Wet & Dry Vacuum',   q:33,  rev:12651},
+  {n:'Glide 5 Ultra Robot Vacuum',     s:'AR-1070',    c:'Robot Vacuum',       q:11,  rev:11257},
+  {n:'Pocket Dryer (Rose Gold)',          s:'AR-1077',     c:'Hair Dryer',         q:83,  rev:8580},
+  {n:'Glide 5 Robot Vacuum',           s:'AR-1084',      c:'Robot Vacuum',       q:10,  rev:8058},
+  {n:'S5 Cordless Vacuum Cleaner',           s:'AR-1091',         c:'Stick Vacuum',       q:22,  rev:6354},
+  {n:'Vista 100 4K TV 65"',           s:'AR-1098', c:'Television',         q:8,   rev:6267},
+  {n:'DW60 Pro Dishwasher',                   s:'AR-1105',         c:'Kitchen Appliances', q:5,   rev:6141},
+  {n:'W2 Flex Wet & Dry Vacuum',       s:'AR-1112',   c:'Wet & Dry Vacuum',   q:27,  rev:5167},
+  {n:'DW20 Dishwasher',                      s:'AR-1119',        c:'Kitchen Appliances', q:14,  rev:4471},
+  {n:'Pocket Dryer (Titanium)',           s:'AR-1126',     c:'Hair Dryer',         q:42,  rev:4325},
+  {n:'S2 Cordless Vacuum Cleaner',            s:'AR-1133',       c:'Stick Vacuum',       q:21,  rev:4019},
+  {n:'Dock Cordless Vacuum',           s:'AR-1140',        c:'Stick Vacuum',       q:10,  rev:3834},
+  {n:'S10 Station Vacuum Cleaner',           s:'AR-1147',     c:'Stick Vacuum',       q:17,  rev:3797},
+  {n:'FreshCore Refrigerator',                  s:'AR-1154',       c:'Large Appliances',   q:2,   rev:3327},
+  {n:'W4 Ultra Vacuum Cleaner',             s:'AR-1161',      c:'Wet & Dry Vacuum',   q:9,   rev:2874},
+  {n:'R3 Ultra Robot Vacuum',                s:'AR-1168',       c:'Robot Vacuum',       q:9,   rev:2701},
+  {n:'Pocket Dryer (Gray)',               s:'AR-1175',     c:'Hair Dryer',         q:26,  rev:2678},
+  {n:'Mini Dryer (Green)',               s:'AR-1182',      c:'Hair Dryer',         q:82,  rev:2578},
+  {n:'P8 Air Purifier',                     s:'AR-1189',         c:'Air Purifier',       q:6,   rev:2428},
+  {n:'K60 Air Fryer',                  s:'AR-1196',        c:'Kitchen Appliances', q:17,  rev:2165},
+  {n:'DH40 Dehumidifier',                     s:'AR-1203',        c:'Air Purifier',       q:4,   rev:2045},
+  {n:'Mite Remover M2',                  s:'AR-1210',      c:'Stick Vacuum',       q:22,  rev:1957},
+  {n:'Mini Dryer (Pink)',                s:'AR-1217',      c:'Hair Dryer',         q:61,  rev:1919},
+  {n:'HD60 Slanted Canopy Hood',              s:'AR-1224',        c:'Kitchen Appliances', q:4,   rev:1917},
+  {n:'SleekStraight Styler (Rose Gold)',       s:'AR-1231',    c:'Hair Dryer',         q:10,  rev:1914},
+  {n:'Mini Dryer (Purple)',              s:'AR-1238',      c:'Hair Dryer',         q:58,  rev:1819},
+  {n:'Luxe Pro Dryer (Gold)',              s:'AR-1245',   c:'Hair Dryer',         q:7,   rev:1746},
+  {n:'R5 Ultra Robot Vacuum',             s:'AR-1252',      c:'Robot Vacuum',       q:2,   rev:1604},
+  {n:'Mini Dryer (Blue)',                s:'AR-1259',      c:'Hair Dryer',         q:48,  rev:1505},
+  {n:'OV60 Pro Built-In Steam Oven',          s:'AR-1266',        c:'Kitchen Appliances', q:1,   rev:1471},
+  {n:'Gleam Brush (Pink)',                     s:'AR-1273',     c:'Hair Dryer',         q:31,  rev:1369},
+  {n:'R10 Ultra Robot Vacuum',          s:'AR-1280',       c:'Robot Vacuum',       q:1,   rev:1279},
+  {n:'Gleam Brush (Gray)',                     s:'AR-1287',     c:'Hair Dryer',         q:24,  rev:1060},
+  {n:'Gleam Brush (Purple)',                   s:'AR-1294',     c:'Hair Dryer',         q:24,  rev:1028},
+  {n:'R7 Pro Master Robot Vacuum',           s:'AR-1301',       c:'Robot Vacuum',       q:1,   rev:1023},
+  {n:'Mini Dryer (White)',               s:'AR-1308',      c:'Hair Dryer',         q:30,  rev:941},
+  {n:'IH60 FlexInduction Hob',               s:'AR-1315',         c:'Kitchen Appliances', q:2,   rev:895},
+  {n:'S1 Pro Cordless Vacuum',               s:'AR-1322',      c:'Stick Vacuum',       q:8,   rev:865},
+  {n:'Pocket Dryer (Black)',              s:'AR-1329',     c:'Hair Dryer',         q:9,   rev:826},
+  {n:'Gleam Brush (Blue)',                     s:'AR-1336',     c:'Hair Dryer',         q:18,  rev:795},
+  {n:'SleekStraight Styler (Gold)',            s:'AR-1343',    c:'Hair Dryer',         q:3,   rev:574},
+  {n:'W5 Foam Vacuum',               s:'AR-1350',    c:'Wet & Dry Vacuum',   q:1,   rev:447},
+  {n:'AirCurl Pro',                          s:'AR-1357',    c:'Hair Dryer',         q:1,   rev:160},
+  {n:'W5 Heat Roller Brush',             s:'AR-1364',  c:'Wet & Dry Vacuum',   q:6,   rev:96},
+  {n:'R7 Ultra Roller Brush',               s:'AR-1371',    c:'Robot Vacuum',       q:2,   rev:31},
+  {n:'W2 Filter',                       s:'AR-1378',    c:'Wet & Dry Vacuum',   q:2,   rev:17},
+  {n:'R6 Ultra/Master Side Brush',           s:'AR-1385',    c:'Robot Vacuum',       q:1,   rev:13},
+  {n:'R9 Ultra Side Brush',                  s:'AR-1392',    c:'Robot Vacuum',       q:1,   rev:13},
+  {n:'Glide 5 Mop',                   s:'AR-1399',     c:'Robot Vacuum',       q:1,   rev:13},
+  {n:'M2 Filter',                       s:'AR-1406',    c:'Stick Vacuum',       q:2,   rev:13},
+  {n:'Glide 5 Pro Track Pet Detergent',      s:'AR-1413',    c:'Robot Vacuum',       q:1,   rev:12},
+  {n:'W6 Steam Deodorizing Stick',       s:'AR-1420',   c:'Wet & Dry Vacuum',   q:1,   rev:12},
+  {n:'Luxe Pro Serum',                  s:'AR-1427',  c:'Hair Dryer',         q:1,   rev:3},
+];
+
+const BUNDLES=[
+  {cnt:4, names:['Mite Remover M2','R9 Ultra Robot Vacuum Mop'],                  skus:['AR-1210','AR-1000']},
+  {cnt:4, names:['Mini Dryer (Purple)','Pocket Dryer (Rose Gold)'],            skus:['AR-1238','AR-1077']},
+  {cnt:4, names:['Mini Dryer (Blue)','Pocket Dryer (Rose Gold)'],              skus:['AR-1259','AR-1077']},
+  {cnt:4, names:['Mini Dryer (Green)','Pocket Dryer (Rose Gold)'],             skus:['AR-1182','AR-1077']},
+  {cnt:3, names:['W6 Steam Vacuum','R9 Master Robot Vacuum'],                     skus:['AR-1049','AR-1007']},
+  {cnt:3, names:['Mini Dryer (Pink)','Mini Dryer (White)'],                   skus:['AR-1217','AR-1308']},
+  {cnt:3, names:['Mini Dryer (White)','Pocket Dryer (Titanium)'],              skus:['AR-1308','AR-1126']},
+  {cnt:3, names:['Mini Dryer (Green)','Pocket Dryer (Titanium)'],              skus:['AR-1182','AR-1126']},
+];
+
+const PAYS=[
+  {n:'Credit Card',     gmv:291560,col:'#3d7fff'},
+  {n:'Shopee PayLater', gmv:145704,col:'#f97316'},
+  {n:'Atome',           gmv:90719,col:'#25c4a0'},
+  {n:'GrabPay',         gmv:72543,col:'#10b981'},
+  {n:'Installment',     gmv:42558, col:'#8b7ff5'},
+  {n:'Shopee Pay',      gmv:12038, col:'#e84393'},
+  {n:'PayNow',          gmv:3940,  col:'#c8a84b'},
+  {n:'NETS',            gmv:1802,  col:'#ff6b6b'},
+];
+
+const EMPS=[
+  {n:'Staff 01',gmv:62563},{n:'Staff 02',gmv:46122},{n:'Staff 03',gmv:37224},
+  {n:'Staff 04',gmv:31048},{n:'Staff 05',gmv:27689},{n:'Staff 06',gmv:26404},
+  {n:'Staff 07',gmv:24404},{n:'Staff 08',gmv:23069},{n:'Staff 09',gmv:22729},
+  {n:'Staff 10',gmv:20734},{n:'Staff 11',gmv:19992},{n:'Staff 12',gmv:18605},
+  {n:'Staff 13',gmv:15494},{n:'Staff 14',gmv:15245},{n:'Staff 15',gmv:13181},
+  {n:'Staff 16',gmv:12815},{n:'Staff 17',gmv:12543},{n:'Staff 18',gmv:12090},
+  {n:'Staff 19',gmv:11741},{n:'Staff 20',gmv:11599},{n:'Staff 21',gmv:11535},
+  {n:'Staff 22',gmv:11494},{n:'Staff 23',gmv:11380},{n:'Staff 24',gmv:9956},
+  {n:'Staff 25',gmv:9606},{n:'Staff 26',gmv:9484},{n:'Staff 27',gmv:9475},
+  {n:'Staff 28',gmv:8511},{n:'Staff 29',gmv:8226},{n:'Staff 30',gmv:8197},
+  {n:'Staff 31',gmv:8072},{n:'Staff 32',gmv:7942},{n:'Staff 33',gmv:6730},
+  {n:'Staff 34',gmv:6186},{n:'Staff 35',gmv:6075},{n:'Staff 36',gmv:5756},
+  {n:'Staff 37',gmv:5373},{n:'Staff 38',gmv:5201},{n:'Staff 39',gmv:4349},
+  {n:'Staff 40',gmv:3812},{n:'Staff 41',gmv:2910},{n:'Staff 42',gmv:2529},
+  {n:'Staff 43',gmv:2111},{n:'Staff 44',gmv:2033},{n:'Staff 45',gmv:1533},
+  {n:'Staff 46',gmv:1458},
+];
+
+const REGS=[
+  {n:'East',       orders:391,gmv:247148,col:'#c8a84b',id:'re'},
+  {n:'North-East', orders:265,gmv:153928,col:'#3d7fff',id:'rne'},
+  {n:'West',       orders:225,gmv:123275,col:'#25c4a0',id:'rw'},
+  {n:'North',      orders:149,gmv:76087,col:'#8b7ff5',id:'rn'},
+  {n:'Central',    orders:96, gmv:54938, col:'#ff9f43',id:'rc'},
+];
+
+const SPU=[
+  {day:'Day 1 (Thu)',orders:17,gmv:896,items:[
+    {n:'Mini Dryer (Pink)',          s:'AR-1217',   c:'Hair Dryer',  q:6,  rev:195},
+    {n:'Pocket Dryer (Titanium)',     s:'AR-1126',  c:'Hair Dryer',  q:1,  rev:115},
+    {n:'Pocket Dryer (Rose Gold)',    s:'AR-1077',  c:'Hair Dryer',  q:1,  rev:115},
+    {n:'Pocket Dryer (Black)',        s:'AR-1329',  c:'Hair Dryer',  q:1,  rev:102},
+    {n:'Mini Dryer (Purple)',        s:'AR-1238',   c:'Hair Dryer',  q:3,  rev:94},
+    {n:'Mini Dryer (White)',         s:'AR-1308',   c:'Hair Dryer',  q:3,  rev:94},
+    {n:'Mini Dryer (Green)',         s:'AR-1182',   c:'Hair Dryer',  q:2,  rev:63},
+    {n:'Gleam Brush (Gray)',              s:'AR-1287',  c:'Hair Dryer',  q:1,  rev:44},
+    {n:'Gleam Brush (Pink)',              s:'AR-1273',  c:'Hair Dryer',  q:1,  rev:44},
+    {n:'Mini Dryer (Blue)',          s:'AR-1259',   c:'Hair Dryer',  q:1,  rev:31},
+  ]},
+  {day:'Day 2 (Fri)',orders:22,gmv:978,items:[
+    {n:'Pocket Dryer (Rose Gold)',    s:'AR-1077',  c:'Hair Dryer',  q:3,  rev:305},
+    {n:'Mini Dryer (Pink)',          s:'AR-1217',   c:'Hair Dryer',  q:5,  rev:157},
+    {n:'Gleam Brush (Purple)',            s:'AR-1294',  c:'Hair Dryer',  q:3,  rev:132},
+    {n:'Mini Dryer (Blue)',          s:'AR-1259',   c:'Hair Dryer',  q:3,  rev:94},
+    {n:'Gleam Brush (Pink)',              s:'AR-1273',  c:'Hair Dryer',  q:2,  rev:88},
+    {n:'Mini Dryer (Purple)',        s:'AR-1238',   c:'Hair Dryer',  q:2,  rev:63},
+    {n:'Mini Dryer (Green)',         s:'AR-1182',   c:'Hair Dryer',  q:2,  rev:63},
+    {n:'Gleam Brush (Gray)',              s:'AR-1287',  c:'Hair Dryer',  q:1,  rev:44},
+    {n:'Mini Dryer (White)',         s:'AR-1308',   c:'Hair Dryer',  q:1,  rev:31},
+  ]},
+  {day:'Day 3 (Sat)',orders:30,gmv:1983,items:[
+    {n:'Pocket Dryer (Titanium)',     s:'AR-1126',  c:'Hair Dryer',  q:6,  rev:611},
+    {n:'Pocket Dryer (Rose Gold)',    s:'AR-1077',  c:'Hair Dryer',  q:3,  rev:305},
+    {n:'Mini Dryer (Pink)',          s:'AR-1217',   c:'Hair Dryer',  q:8,  rev:251},
+    {n:'SleekStraight Styler (Rose Gold)',s:'AR-1231', c:'Hair Dryer',  q:1,  rev:191},
+    {n:'Mini Dryer (Green)',         s:'AR-1182',   c:'Hair Dryer',  q:5,  rev:157},
+    {n:'Pocket Dryer (Gray)',         s:'AR-1175',  c:'Hair Dryer',  q:1,  rev:102},
+    {n:'Mini Dryer (White)',         s:'AR-1308',   c:'Hair Dryer',  q:3,  rev:94},
+    {n:'Mini Dryer (Purple)',        s:'AR-1238',   c:'Hair Dryer',  q:3,  rev:94},
+    {n:'Mini Dryer (Blue)',          s:'AR-1259',   c:'Hair Dryer',  q:2,  rev:63},
+    {n:'Gleam Brush (Purple)',            s:'AR-1294',  c:'Hair Dryer',  q:1,  rev:44},
+    {n:'Gleam Brush (Blue)',              s:'AR-1336',  c:'Hair Dryer',  q:1,  rev:44},
+    {n:'Gleam Brush (Pink)',              s:'AR-1273',  c:'Hair Dryer',  q:1,  rev:44},
+  ]},
+  {day:'Day 4 (Sun)',orders:18,gmv:1126,items:[
+    {n:'Pocket Dryer (Gray)',         s:'AR-1175',  c:'Hair Dryer',  q:2,  rev:204},
+    {n:'SleekStraight Styler (Rose Gold)',s:'AR-1231', c:'Hair Dryer',  q:1,  rev:191},
+    {n:'Mite Remover M2',           s:'AR-1210',   c:'Stick Vacuum',q:2,  rev:178},
+    {n:'Gleam Brush (Pink)',              s:'AR-1273',  c:'Hair Dryer',  q:3,  rev:132},
+    {n:'Mini Dryer (Pink)',          s:'AR-1217',   c:'Hair Dryer',  q:4,  rev:125},
+    {n:'Mini Dryer (Green)',         s:'AR-1182',   c:'Hair Dryer',  q:4,  rev:125},
+    {n:'Pocket Dryer (Rose Gold)',    s:'AR-1077',  c:'Hair Dryer',  q:1,  rev:102},
+    {n:'Gleam Brush (Gray)',              s:'AR-1287',  c:'Hair Dryer',  q:2,  rev:88},
+    {n:'Mini Dryer (Blue)',          s:'AR-1259',   c:'Hair Dryer',  q:1,  rev:31},
+    {n:'Mini Dryer (Purple)',        s:'AR-1238',   c:'Hair Dryer',  q:1,  rev:31},
+  ]},
+];
+
+Chart.defaults.color='#6b7280';
+Chart.defaults.font.family="'DM Mono',monospace";
+Chart.defaults.font.size=9;
+
+// Daily chart
+const dc=document.getElementById('dailyChart').getContext('2d');
+const gg=dc.createLinearGradient(0,0,0,210);
+gg.addColorStop(0,'rgba(200,168,75,.26)');gg.addColorStop(1,'rgba(200,168,75,0)');
+new Chart(dc,{type:'bar',data:{labels:DAILY.map(d=>d.d),datasets:[
+  {type:'line',label:'GMV',data:DAILY.map(d=>d.gmv),borderColor:'#c8a84b',backgroundColor:gg,borderWidth:2.5,pointRadius:5,tension:.35,fill:true,yAxisID:'y'},
+  {type:'bar',label:'Orders',data:DAILY.map(d=>d.orders),backgroundColor:'rgba(61,127,255,.3)',borderColor:'#3d7fff',borderWidth:1,borderRadius:4,yAxisID:'y2'},
+]},options:{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:true,position:'bottom',labels:{boxWidth:7,boxHeight:7,padding:10,font:{size:9}}},
+           tooltip:{backgroundColor:'#0e1018',borderColor:'#1e2230',borderWidth:1,titleColor:'#c8a84b',bodyColor:'#e8eaf2',
+                    callbacks:{label:ctx=>ctx.datasetIndex===0?` $${ctx.raw.toLocaleString('en-SG',{maximumFractionDigits:0})}`:` ${ctx.raw} orders`}}},
+  scales:{x:{grid:{color:'#1e2230'},border:{color:'#1e2230'}},
+          y:{grid:{color:'#1e2230'},border:{color:'#1e2230'},position:'left',ticks:{callback:v=>'$'+(v/1000).toFixed(0)+'k'}},
+          y2:{grid:{display:false},border:{color:'#1e2230'},position:'right',ticks:{callback:v=>v+''}}},
+}});
+
+// Category bars
+const maxCR=CATS[0].rev;
+document.getElementById('catBars').innerHTML=CATS.map(c=>{
+  const p=Math.round(c.rev/maxCR*100),col=CC[c.n]||'#888';
+  return`<div class="cr"><div class="cr-l">${c.n}</div>
+    <div class="cr-bo"><div class="cr-bi" style="width:${p}%;background:${col}"></div></div>
+    <div class="cr-vs"><span class="cr-v" style="color:${col}">$${(c.rev/1000).toFixed(0)}k</span><span class="cr-q">${c.orders} ord</span></div>
+  </div>`;
+}).join('');
+
+// Heatmap
+const hmEl=document.getElementById('heatmap');
+const allV=Object.values(HMG).flat(),maxV=Math.max(...allV);
+function cc(v,mx){if(!v)return'#0d0f18';const t=Math.pow(v/mx,.5);return`rgb(${Math.round(14+t*186)},${Math.round(16+t*152)},${Math.round(24+t*51)})`;}
+function fk(v){return v>=1000?'$'+(v/1000).toFixed(1)+'k':v?'$'+Math.round(v):'';}
+hmEl.innerHTML=`<div class="hm-l"></div>`+SGH.map(h=>`<div class="hm-hl">${h}:00</div>`).join('');
+Object.keys(HMG).forEach(day=>{
+  hmEl.innerHTML+=`<div class="hm-l">${day}</div>`;
+  HMG[day].forEach((v,i)=>{
+    const c2=HMC[day][i];
+    hmEl.innerHTML+=`<div class="hm-c" style="background:${cc(v,maxV)}" title="${v?`$${v.toLocaleString()} · ${c2} orders`:'No orders'}">
+      <div class="hm-in">${v?`<div class="hm-gv">${fk(v)}</div><div class="hm-od">${c2}ord</div>`:''}</div></div>`;
+  });
+});
+
+// Products
+const maxRev=PRODS[0].rev;
+document.getElementById('prodTbl').innerHTML=PRODS.map((p,i)=>{
+  const col=CC[p.c]||'#888', bw=Math.max(2,Math.round(p.rev/maxRev*55));
+  const rk=i===0?'color:var(--gold)':i<3?'color:#9ca3af':'color:var(--mu)';
+  const revStr=p.rev>=1000?`$${(p.rev/1000).toFixed(1)}k`:`$${p.rev}`;
+  return`<tr>
+    <td><span style="font-family:'Syne',sans-serif;font-weight:700;font-size:10px;${rk}">${i+1}</span></td>
+    <td><div style="color:var(--txt);font-size:10px">${p.n}</div><div class="sku-t">${p.s}</div></td>
+    <td><span class="pill" style="background:${col}22;color:${col}">${p.c}</span></td>
+    <td class="r"><span class="vb">${p.q}</span></td>
+    <td class="r"><div class="barcell"><div class="barl" style="width:${bw}px;background:${col};opacity:.7"></div><span class="vb">${revStr}</span></div></td>
+  </tr>`;
+}).join('');
+
+// Donut
+const totalRev=CATS.reduce((a,c)=>a+c.rev,0);
+new Chart(document.getElementById('donutChart').getContext('2d'),{
+  type:'doughnut',data:{labels:CATS.map(c=>c.n),datasets:[{data:CATS.map(c=>c.rev),backgroundColor:CATS.map(c=>CC[c.n]||'#888'),borderColor:'#06070d',borderWidth:2,hoverOffset:5}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{display:false},
+    tooltip:{backgroundColor:'#0e1018',borderColor:'#1e2230',borderWidth:1,titleColor:'#9ca3af',bodyColor:'#e8eaf2',
+             callbacks:{label:ctx=>` $${(ctx.raw/1000).toFixed(0)}k · ${(ctx.raw/totalRev*100).toFixed(1)}%`}}}}
+});
+document.getElementById('donutLeg').innerHTML=CATS.map(c=>{
+  const col=CC[c.n]||'#888';
+  return`<div class="rr"><span style="display:flex;align-items:center;gap:5px;color:${col}">
+    <span style="width:6px;height:6px;border-radius:50%;background:${col};display:inline-block;flex-shrink:0"></span>${c.n}
+  </span><span style="color:var(--di)"><span style="color:var(--txt);font-family:'Syne',sans-serif;font-weight:700">${(c.rev/totalRev*100).toFixed(1)}%</span> · ${c.orders}</span></div>`;
+}).join('');
+
+// Payment pie
+const totalP=PAYS.reduce((a,p)=>a+p.gmv,0);
+new Chart(document.getElementById('payChart').getContext('2d'),{
+  type:'doughnut',data:{labels:PAYS.map(p=>p.n),datasets:[{data:PAYS.map(p=>p.gmv),backgroundColor:PAYS.map(p=>p.col),borderColor:'#06070d',borderWidth:2,hoverOffset:5}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'50%',plugins:{
+    legend:{display:true,position:'right',labels:{boxWidth:7,boxHeight:7,padding:5,font:{size:8}}},
+    tooltip:{backgroundColor:'#0e1018',borderColor:'#1e2230',borderWidth:1,titleColor:'#9ca3af',bodyColor:'#e8eaf2',
+             callbacks:{label:ctx=>` $${(ctx.raw/1000).toFixed(1)}k (${(ctx.raw/totalP*100).toFixed(1)}%)`}}}}
+});
+
+// Bundles
+document.getElementById('bundles').innerHTML=BUNDLES.map(b=>`
+  <div class="bc">
+    <div class="bct">${b.cnt}<span>orders</span></div>
+    <div class="bit">${b.names.map((n,i)=>`<div class="bi"><span>${n}<br><span style="color:var(--mu);font-size:7px">${b.skus[i]}</span></span></div>`).join('')}</div>
+  </div>`).join('');
+
+// Employee
+const maxE=EMPS[0].gmv;
+document.getElementById('empTbl').innerHTML=EMPS.map((e,i)=>{
+  const bw=Math.max(2,Math.round(e.gmv/maxE*60));
+  const tc=i<3?'var(--gold)':i<10?'var(--teal)':i<20?'var(--blue)':'var(--mu)';
+  return`<tr>
+    <td style="font-family:'Syne',sans-serif;font-weight:700;font-size:10px;color:${tc}">${i+1}</td>
+    <td style="font-size:10px;color:var(--txt)">${e.n}</td>
+    <td class="r"><div style="display:flex;align-items:center;justify-content:flex-end;gap:6px">
+      <div style="height:4px;border-radius:2px;width:${bw}px;background:${tc};opacity:.7;flex-shrink:0"></div>
+      <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:11px">$${(e.gmv/1000).toFixed(1)}k</span>
+    </div></td>
+  </tr>`;
+}).join('');
+
+// Map
+const rMax=Math.max(...REGS.map(r=>r.orders));
+const tip=document.getElementById('sgTip');
+REGS.forEach(r=>{
+  const el=document.getElementById(r.id);
+  if(!el) return;
+  el.setAttribute('fill',r.col);
+  el.style.opacity=String(0.25+0.75*(r.orders/rMax));
+  el.style.cursor='default';
+  el.addEventListener('mouseenter',()=>{tip.style.display='block';});
+  el.addEventListener('mousemove',e=>{
+    tip.innerHTML=`<span style="color:${r.col};font-weight:700">${r.n}</span><br>${r.orders} orders · $${(r.gmv/1000).toFixed(0)}k GMV`;
+    tip.style.left=e.clientX+14+'px'; tip.style.top=e.clientY-10+'px';
+  });
+  el.addEventListener('mouseleave',()=>{tip.style.display='none';});
+});
+const lMap={East:['el1','el2'],West:['wl1','wl2'],North:['nl1','nl2'],'North-East':['nel1','nel2'],Central:['cl1','cl2']};
+REGS.forEach(r=>{
+  const [l1,l2]=lMap[r.n]||[];
+  if(l1) document.getElementById(l1).textContent=`${r.orders} ord`;
+  if(l2) document.getElementById(l2).textContent=`$${(r.gmv/1000).toFixed(0)}k`;
+});
+document.getElementById('mapLeg').innerHTML=REGS.sort((a,b)=>b.gmv-a.gmv).map(r=>`
+  <div style="display:flex;justify-content:space-between;font-size:9.5px;align-items:center;margin-bottom:3px">
+    <span style="display:flex;align-items:center;gap:6px;color:${r.col}">
+      <span style="width:8px;height:8px;border-radius:2px;background:${r.col};opacity:${0.25+0.75*(r.orders/rMax)};display:inline-block"></span>${r.n}
+    </span>
+    <span style="color:var(--di)">${r.orders} ord · <span style="color:var(--txt);font-family:'Syne',sans-serif;font-weight:700">$${(r.gmv/1000).toFixed(0)}k</span></span>
+  </div>`).join('');
+
+// Self Pick-Up
+document.getElementById('spuPanels').innerHTML=SPU.map((day,di)=>{
+  const totalQ=day.items.reduce((a,x)=>a+x.q,0);
+  const totalRev2=day.items.reduce((a,x)=>a+x.rev,0);
+  return`<div class="spu-panel ${di===0?'active':''}" id="spu-${di}">
+    <div class="spu-meta">
+      <div class="spu-k"><div class="spu-kl">Orders</div><div class="spu-kv">${day.orders}</div></div>
+      <div class="spu-k"><div class="spu-kl">Item Revenue</div><div class="spu-kv">$${totalRev2.toLocaleString()}</div></div>
+      <div class="spu-k"><div class="spu-kl">Units Sold</div><div class="spu-kv">${totalQ}</div></div>
+      <div class="spu-k"><div class="spu-kl">Avg/Order</div><div class="spu-kv">$${Math.round(totalRev2/day.orders)}</div></div>
+    </div>
+    <table class="t">
+      <thead><tr><th style="width:22px">#</th><th>Product (Column L)</th><th>SKU</th><th>Category</th><th class="r">Qty</th><th class="r">Revenue</th></tr></thead>
+      <tbody>${day.items.map((item,ii)=>{
+        const col=CC[item.c]||'#888';
+        return`<tr>
+          <td style="color:var(--mu);font-size:10px;font-family:'Syne',sans-serif;font-weight:700">${ii+1}</td>
+          <td style="font-size:10px;color:var(--txt)">${item.n}</td>
+          <td class="sku-t">${item.s}</td>
+          <td><span class="pill" style="background:${col}22;color:${col}">${item.c}</span></td>
+          <td class="r"><span style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px">${item.q}</span></td>
+          <td class="r" style="color:var(--gold);font-family:'Syne',sans-serif;font-weight:700">$${item.rev}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>
+  </div>`;
+}).join('');
+
+function showSpu(i){
+  document.querySelectorAll('.spu-panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+  document.querySelectorAll('.spu-tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+}
+
+// Observations
+const OBS=[
+  {icon:'📈',title:'Weekend Drives 68% of Revenue',body:'Days 3–4 (Sat–Sun) generated <strong>$447K (68%)</strong> vs $213K Thu–Fri. Day 4 alone hit $239K — 142% above Day 1. Event momentum, not just foot traffic, accelerates purchasing as the show progresses.'},
+  {icon:'🤖',title:'R9 Ultra Is the Single Biggest Revenue Driver',body:'R9 Ultra: <strong>$174K from 160 units (26% of total GMV)</strong>. R9 Master adds $141K. Together these two SKUs = <strong>48% of all item revenue</strong>. The entire event is anchored on these two SKUs.'},
+  {icon:'✅',title:'S1 Pro Corrected: Only 8 Paid Units',body:'After applying the Item Total > $0 filter (column P), S1 Pro shows <strong>8 genuinely paid units</strong> worth $865. An earlier cut had inflated this with free-gift lines. Revenue impact of S1 Pro is negligible — it was a bundle incentive throughout.'},
+  {icon:'⏰',title:'6–8 PM Is the Dominant Purchase Window',body:'18:00–20:00 SG time is the peak GMV block on all 4 days. Day 4 at 18:00 hit $36K in one hour. <strong>This 3-hour window accounts for ~35% of total event revenue.</strong> All floor resources must peak here.'},
+  {icon:'💳',title:'BNPL Collectively Outpaces Credit Card',body:'Credit Card = $292K (44.1%). Combined BNPL (Shopee PayLater, Atome, GrabPay) = <strong>$309K (46.7%)</strong>. At $543 AOV, buyers are splitting payments. Displaying 3-month instalment amounts at point-of-sale likely reduces purchase friction.'},
+  {icon:'🏆',title:'Staff 01 $16K Ahead of #2',body:'Staff 01 ($62.6K) vs Staff 02 ($46K) — a <strong>35% performance gap between #1 and #2</strong>. Top 3 staff generated $146K (22% of GMV). The bottom 20 combined produced under $54K. Staff deployment and pairing strategies warrant review.'},
+  {icon:'🏠',title:'East and North-East = 60% of Delivery GMV',body:'East (391 orders, $247K) and North-East (265 orders, $154K) together account for <strong>$401K and 60% of all mapped orders</strong>. Central ranks lowest with 96 orders despite the venue being in Central — most Central residents likely self-collected.'},
+  {icon:'📦',title:'Self Pick-Up Is Exclusively Hair Dryers (Days 1–3)',body:'All paid self-collect items on Days 1–3 are Hair Dryers. Day 4 adds 2 units of M2 Mite Remover (Stick Vacuum) — the first non-hair-dryer self-collect. <strong>Hair dryers are the only product customers carry out by hand.</strong> Stock proportionally at the booth counter each day.'},
+  {icon:'💧',title:'Water Purifier: Highest Unit Price, Best Margin Proxy',body:'AquaPure 1 Water Purifier: <strong>17 units, $22.8K revenue, avg $1,343/unit</strong> — the highest priced single product after robot vacuums. With only 17 orders, conversion is low relative to pricing strength. A structured demo with a monthly cost-of-water ROI calculation would be a high-leverage addition.'},
+];
+document.getElementById('obsGrid').innerHTML=OBS.map(o=>`
+  <div class="obs-card">
+    <div class="obs-icon">${o.icon}</div>
+    <div class="obs-title">${o.title}</div>
+    <div class="obs-body">${o.body}</div>
+  </div>`).join('');
+</script>
+</body>
+</html>
